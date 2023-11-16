@@ -26,7 +26,7 @@ function sendTextLocalStorage(e) {
         console.log("entraif")
 
         if (!document.querySelector(".errorDiv")) {
-            error.innerText = "Introduce un texto valido";
+            error.innerText = "Introduce un texto valido.";
             error.classList.add("errorP");
             errorDiv.classList.add("errorDiv");
             formDiv.insertAdjacentElement("afterend", errorDiv)
