@@ -1,38 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LocalStorage</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css">
-    <style>
-        /* Agregar estilos personalizados si es necesario */
-    </style>
+  <meta charset="UTF-8">
+  <title>Guardar Mensajes</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<body class="container py-4">
 
-<body>
-    <div class="container mt-4">
-        <div id="headerDiv" class="text-center">
-            <h1>Local Storage</h1>
-        </div>
-
-        <div id="formularioDiv" class="mt-4">
-            <form class="form">
-                <div class="mb-3">
-                    <label for="texto" class="form-label">Texto:</label>
-                    <textarea id="texto" name="texto" class="form-control" placeholder="Escribe algo..."></textarea>
-                </div>
-                <div class="text-center">
-                    <input type="submit" value="Enviar" class="btn btn-primary" id="inputDiv">
-                </div>
-            </form>
-        </div>
+  <form id="message-form">
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" id="message-input" placeholder="Introduce tu mensaje...">
+      <div class="input-group-append">
+        <button class="btn btn-primary" type="submit" id="add-message-btn">Agregar</button>
+      </div>
     </div>
+    <p id="error-message" style="display: none; color: red;"></p>
+  </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./script/app.js"></script>
+  <ul id="message-list" class="list-group" onclick="deleteMessage(event)"></ul>
+
+  <!-- Bootstrap JS and your script -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="./script/app.js"></script>
 </body>
-
 </html>

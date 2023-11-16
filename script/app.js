@@ -1,126 +1,89 @@
-if (typeof (Storage) !== 'undefined') {
-    console.log('compatible')
-} else {
-    console.log('incompatible')
-}
-const form = document.querySelector(".form");
-
-const maxWords = 15;
-
-form.addEventListener('submit', sendTextLocalStorage);
-window.addEventListener('load', showLocalStorage)
-
-function sendTextLocalStorage(e) {
-    e.preventDefault()
-
-    let message = document.querySelector("#texto").value;
-    let textArea = document.querySelector("#texto");
-    let error = document.createElement('p');
-    let errorDiv = document.createElement('div');
-    let formDiv = document.querySelector('#formularioDiv')
-    let paragraph = document.createElement("p");
-    let paragraphDiv = document.createElement("div");
-    // let toggleClass = true;
-
-    if (message === "") {
-        console.log("entraif")
-
-        if (!document.querySelector(".errorDiv")) {
-            error.innerText = "Introduce un texto valido.";
-            error.classList.add("errorP");
-            errorDiv.classList.add("errorDiv");
-            formDiv.insertAdjacentElement("afterend", errorDiv)
-            errorDiv.insertAdjacentElement("afterbegin", error);
-
-            setTimeout(() => {
-                errorDiv.classList.remove("errorDiv");
-                errorDiv.style.display = "none";
-            }, 2000);
-        }
-
+// Función para mostrar mensajes en la lista
+function renderMessages() {
+    const messages = JSON.parse(localStorage.getItem('messages')) || [];
+    const messageList = document.getElementById('message-list');
+  
+    // Limpiar la lista
+    messageList.innerHTML = '';
+  
+    // Mostrar los mensajes en la lista
+    messages.forEach(message => {
+      const listItem = document.createElement('li');
+      listItem.classList.add('message-item');
+      listItem.textContent = message.texto;
+  
+      // Crear botón de eliminar (X)
+      const deleteButton = document.createElement('span');
+      deleteButton.textContent = ' ❌';
+      deleteButton.classList.add('delete-button');
+      deleteButton.dataset.id = message.id;
+  
+      // Agregar el evento de eliminar al botón
+      deleteButton.onclick = function (event) {
+        const messageId = event.target.dataset.id;
+        deleteMessageFromLocalStorage(messageId);
+      };
+  
+      // Agregar el botón de eliminar al elemento de la lista
+      listItem.appendChild(deleteButton);
+  
+      // Agregar el mensaje a la lista
+      messageList.appendChild(listItem);
+    });
+  }
+  
+  // Función para guardar mensajes en localStorage
+  function saveMessage(message) {
+    const messages = JSON.parse(localStorage.getItem('messages')) || [];
+    const tweetObj = {
+      id: Date.now(),
+      texto: message
+    };
+    messages.push(tweetObj);
+    localStorage.setItem('messages', JSON.stringify(messages));
+    renderMessages();
+  }
+  
+  // Función para eliminar un mensaje del localStorage
+  function deleteMessageFromLocalStorage(id) {
+    let messages = JSON.parse(localStorage.getItem('messages')) || [];
+    messages = messages.filter(message => message.id != id);
+    localStorage.setItem('messages', JSON.stringify(messages));
+    renderMessages();
+  }
+  
+  // Función para agregar un mensaje
+  function addMessage(event) {
+    event.preventDefault(); // Evitar que el formulario se envíe y la página se recargue
+    const messageInput = document.getElementById('message-input');
+    const errorMessage = document.getElementById('error-message');
+    const message = messageInput.value.trim();
+  
+    if (message === '') {
+      errorMessage.textContent = 'Debe introducir el texto a añadir';
+      errorMessage.style.display = 'block';
+      setTimeout(() => {
+        errorMessage.style.display = 'none';
+      }, 2000);
     } else {
-
-        const tweetObj = {
-            id: Date.now(),
-            texto: message
-        }
-        localStorage.setItem(`Mensaje: ${tweetObj.id}`, tweetObj.texto)
-        textArea.value = "";
-        console.log(message);
-
-
-
-        paragraphDiv.classList.add("paragraphDiv");
-        paragraph.classList.add("paragraph");
-
-
-        let eliminarBtn = document.createElement('button');
-        eliminarBtn.innerText = 'x';
-        eliminarBtn.addEventListener('click', () => eliminarMensaje(`Mensaje: ${tweetObj.id}`));
-
-        if (document.querySelector("#paragraphDiv")) {
-            paragraphDiv.insertAdjacentElement("beforeend", paragraphDiv);
-            paragraphDiv.insertAdjacentElement("afterbegin", paragraph);
-            paragraph.appendChild(eliminarBtn);
-
-        } else {
-            formDiv.insertAdjacentElement("afterend", paragraphDiv);
-            paragraphDiv.insertAdjacentElement("afterbegin", paragraph);
-            paragraph.insertAdjacentElement("afterbegin", eliminarBtn);
-
-        }
-
-        eliminarBtn.addEventListener('click', () => eliminarMensaje(key));
-
-
-
-        const words = tweetObj.texto.split(/\s+/);
-
-        // Si el número de palabras excede el límite, agrega saltos de línea
-        if (words.length > maxWords) {
-            const truncatedMessage = words.slice(0, maxWords).join(" ") + " ...";
-            paragraph.innerText = truncatedMessage;
-
-        } else {
-            paragraph.innerText = tweetObj.texto;
-        }
-
+      saveMessage(message);
+      messageInput.value = ''; // Limpiar el input después de agregar el mensaje
     }
-
-}
-
-function showLocalStorage() {
-    let formDiv = document.querySelector('#formularioDiv');
-    let paragraphDiv = document.createElement('div');
-    paragraphDiv.classList.add('paragraphDiv');
-
-    for (const key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
-            const value = localStorage.getItem(key);
-            const paragraph = document.createElement('p');
-            paragraph.classList.add('paragraph');
-
-            const eliminarBtn = document.createElement('button');
-            eliminarBtn.innerText = 'x';
-            eliminarBtn.classList.add("delete")
-            eliminarBtn.addEventListener('click', () => eliminarMensaje(key));
-
-            paragraph.insertAdjacentElement("beforeend", eliminarBtn);
-            paragraph.appendChild(document.createTextNode(value));
-
-            paragraphDiv.appendChild(paragraph);
-        }
+  }
+  
+  // Función para eliminar un mensaje al hacer clic en el botón (X)
+  function deleteMessage(event) {
+    if (event.target.classList.contains('delete-button')) {
+      const messageId = event.target.dataset.id;
+      deleteMessageFromLocalStorage(messageId);
     }
-
-    formDiv.insertAdjacentElement('afterend', paragraphDiv);
-}
-
-
-function eliminarMensaje(key) {
-    localStorage.removeItem(key);
-    let paragraphDiv = document.querySelector(".paragraphDiv");
-    paragraphDiv.innerHTML = "";
-    showLocalStorage(); 
-}
-
-
+  }
+  
+  // Event listener para el botón de agregar mensaje y reiniciar el formulario
+  const form = document.getElementById('message-form');
+  form.addEventListener('submit', addMessage);
+  form.reset(); // Reiniciar el formulario al cargar la página
+  
+  // Cargar mensajes al cargar la página
+  renderMessages();
+  
